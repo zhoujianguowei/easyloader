@@ -1,0 +1,2 @@
+gitlab token
+	ghp_UEcm0JyHoxntki8ZLWsRHla1LFsaV84bYmzp
