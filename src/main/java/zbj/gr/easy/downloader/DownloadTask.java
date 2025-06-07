@@ -13,7 +13,12 @@ import org.apache.http.impl.conn.DefaultProxyRoutePlanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.util.Random;
 
@@ -21,7 +26,7 @@ public class DownloadTask implements Runnable {
 
     private static final Logger logger = LoggerFactory.getLogger(DownloadTask.class);
     private static final int MAX_RETRIES = 30; // 最大重试次数
-    private static final int BLOCK_SIZE = 1 * 1024 * 1024; // 每个块 1MB
+    private static final int BLOCK_SIZE = 4 * 1024 * 1024; // 每个块 4MB
     private static final int BUFFER_SIZE = BLOCK_SIZE; // 缓冲区大小
 
     private final CloseableHttpClient httpClient;
@@ -89,6 +94,7 @@ public class DownloadTask implements Runnable {
                         }
                     } else {
                         logger.warn("Unexpected status code: {}", statusCode);
+                        throw new IOException("unexpected status code " + statusCode + ",line=" + response.getStatusLine().getReasonPhrase());
                     }
                 }
                 success = true;

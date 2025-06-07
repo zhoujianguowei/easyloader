@@ -23,7 +23,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class MultiThreadedDownloader {
+public class FileDownloader {
 
     private final String url;
     private final String savePath;
@@ -32,9 +32,9 @@ public class MultiThreadedDownloader {
     private final int threadCount;
     private final CloseableHttpClient httpClient;
     private long startTime; // 新增成员变量
-    private static final Logger logger = LoggerFactory.getLogger(MultiThreadedDownloader.class);
+    private static final Logger logger = LoggerFactory.getLogger(FileDownloader.class);
 
-    private MultiThreadedDownloader(Builder builder) {
+    private FileDownloader(Builder builder) {
         this.url = builder.url;
         this.savePath = builder.savePath != null ? builder.savePath : extractFileNameFromUrl(builder.url);
         this.proxyHost = builder.proxyHost;
@@ -53,7 +53,7 @@ public class MultiThreadedDownloader {
         private String savePath;
         private String proxyHost;
         private int proxyPort = 0;
-        private int threadCount = 4;
+        private int threadCount = 8;
         private CloseableHttpClient httpClient;
 
         public Builder url(String url) {
@@ -77,14 +77,14 @@ public class MultiThreadedDownloader {
             return this;
         }
 
-        public MultiThreadedDownloader build() {
+        public FileDownloader build() {
             // 创建HttpClient
             if (proxyHost != null && proxyPort > 0) {
                 httpClient = DownloadTask.createHttpClientWithProxy(proxyHost, proxyPort);
             } else {
                 httpClient = HttpClients.createDefault();
             }
-            return new MultiThreadedDownloader(this);
+            return new FileDownloader(this);
         }
     }
 
