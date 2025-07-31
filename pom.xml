@@ -10,8 +10,8 @@
 
     <!-- Java 版本配置 -->
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
     </properties>
@@ -111,31 +111,16 @@
             <version>1.3.2</version>
         </dependency>
 
-
-        <!-- https://mvnrepository.com/artifact/com.github.sealedtx/java-youtube-downloader -->
-        <dependency>
-            <groupId>com.github.sealedtx</groupId>
-            <artifactId>java-youtube-downloader</artifactId>
-            <version>3.2.8</version>
-        </dependency>
-
-        <!-- YouTube 下载核心库 -->
-        <!--         https://mvnrepository.com/artifact/com.github.sealedtx/java-youtube-downloader -->
-        <!--        <dependency>-->
-        <!--            <groupId>com.github.kiulian</groupId>-->
-        <!--            <artifactId>youtube-downloader-java</artifactId> &lt;!&ndash; 注意：这里用 'youtube-downloader-java' &ndash;&gt;-->
-        <!--            <version>v5.2.1</version> &lt;!&ndash; 使用 'v' 前缀的版本号，这是 JitPack 的标准做法 &ndash;&gt;-->
-        <!--        </dependency>-->
-        <!--        <dependency>-->
-        <!--            <groupId>com.github.kiulian</groupId>-->
-        <!--            <artifactId>youtube-downloader</artifactId> &lt;!&ndash; 注意 artifactId 没有 '-java' 后缀 &ndash;&gt;-->
-        <!--            <version>5.2.1</version> &lt;!&ndash; 写作此回答时 5.2.1 是最新版，请再次确认 &ndash;&gt;-->
-        <!--        </dependency>-->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.24</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.grw.xiaobai</groupId>
+            <artifactId>common-util</artifactId>
+            <version>3.1.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

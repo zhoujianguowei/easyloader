@@ -1,8 +1,10 @@
 package zbj.gr.easy.downloader;
 
+import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -12,14 +14,15 @@ public class Main {
     private static ExecutorService executorService = Executors.newFixedThreadPool(6);
 
     public static void main(String[] args) {
-        int size = 10;
+        int size = 2;
         CountDownLatch countDownLatch = new CountDownLatch(size);
+        List<String> urlList = Lists.newArrayList();
         for (int i = 1; i <= size; i++) {
             String index = i < 10 ? String.format("0%d", i) : String.valueOf(i);
-            String url = String.format("https://huggingface.co/mistralai/Devstral-Small-2505/resolve/main/model-000%s-of-00010.safetensors", index);
+            String url = urlList.get(i - 1);
             String proxyHost = "127.0.0.1"; // 代理主机地址
             int proxyPort = 7897; // 代理端口
-            FileDownloader downloader = FileDownloader.builder().url(url).proxy(proxyHost, proxyPort).build();
+            FileDownloader downloader = FileDownloader.builder().url(url).build();
             executorService.submit(() -> {
                 LOGGER.info("begin to download {}", url);
                 downloader.download();
