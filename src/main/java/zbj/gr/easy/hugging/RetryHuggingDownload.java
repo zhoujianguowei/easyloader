@@ -18,6 +18,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
@@ -109,12 +110,15 @@ public class RetryHuggingDownload {
         return values.toArray(new String[0]);
     }
 
-    public void downloadHuggingWholeRepo(String repoPath, File saveDir) {
+    public void downloadHuggingWholeRepo(String repoPath, File saveDir, String includePattern) {
         if (!saveDir.exists() || !saveDir.isDirectory()) {
             Assert.isTrue(saveDir.mkdirs(), String.format("failed to create %s dir", saveDir.getAbsolutePath()));
         }
         List<String> cmdList = Lists.newArrayList(HUGGING_COMMAND, "download", repoPath,
                 "--local-dir", saveDir.getAbsolutePath());
+        if (StringUtils.isNotBlank(includePattern)) {
+            cmdList.addAll(Lists.newArrayList("--include", includePattern));
+        }
         ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(4);
         AtomicBoolean shouldStop = new AtomicBoolean(false);
         Consumer<String> stringConsumer = str -> {
@@ -141,7 +145,7 @@ public class RetryHuggingDownload {
                 }
             }
         };
-        scheduledExecutorService.scheduleWithFixedDelay(detectRetryRunnable, 20, 10, TimeUnit.SECONDS);
+        ScheduledFuture<?> detectFuture = scheduledExecutorService.scheduleWithFixedDelay(detectRetryRunnable, 20, 10, TimeUnit.SECONDS);
         try {
             while (!shouldStop.get()) {
                 LOGGER.info("start download {} savePath={}", repoPath, saveDir.getAbsolutePath());
@@ -165,6 +169,7 @@ public class RetryHuggingDownload {
         } finally {
             LOGGER.info("stop download task repoPath={}", repoPath);
             try {
+                detectFuture.cancel(true);
                 killDownloadProcess(repoPath);
             } catch (Exception e) {
                 LOGGER.error("kill process error", e);
@@ -196,12 +201,11 @@ public class RetryHuggingDownload {
         }
     }
 
-
     public static void main(String[] args) {
-        String repoPath = "Qwen/Qwen3-235B-A22B-Thinking-2507";
-        File savePath = new File("/home/zbj/vllm/Qwen3-235B-A22B-Thinking-2507");
+        String repoPath = "mlabonne/gemma-3-27b-it-abliterated-GGUF";
+        File savePath = new File("/home/zbj/vllm/gemma-3-27b-it-abliterated-GGUF");
         RetryHuggingDownload retryHuggingDownload = new RetryHuggingDownload();
-        retryHuggingDownload.downloadHuggingWholeRepo(repoPath, savePath);
+        retryHuggingDownload.downloadHuggingWholeRepo(repoPath, savePath, "*q8_0*");
     }
 
 }
