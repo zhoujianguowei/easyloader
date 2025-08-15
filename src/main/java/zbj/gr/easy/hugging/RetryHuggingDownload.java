@@ -110,14 +110,18 @@ public class RetryHuggingDownload {
         return values.toArray(new String[0]);
     }
 
-    public void downloadHuggingWholeRepo(String repoPath, File saveDir, String includePattern) {
+    public void downloadHuggingWholeRepo(String repoPath, File saveDir) {
+        downloadHuggingWholeRepo(repoPath, saveDir, null);
+    }
+
+    public void downloadHuggingWholeRepo(String repoPath, File saveDir, String includeGlobPattern) {
         if (!saveDir.exists() || !saveDir.isDirectory()) {
             Assert.isTrue(saveDir.mkdirs(), String.format("failed to create %s dir", saveDir.getAbsolutePath()));
         }
         List<String> cmdList = Lists.newArrayList(HUGGING_COMMAND, "download", repoPath,
                 "--local-dir", saveDir.getAbsolutePath());
-        if (StringUtils.isNotBlank(includePattern)) {
-            cmdList.addAll(Lists.newArrayList("--include", includePattern));
+        if (StringUtils.isNotBlank(includeGlobPattern)) {
+            cmdList.addAll(Lists.newArrayList("--include", includeGlobPattern));
         }
         ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(4);
         AtomicBoolean shouldStop = new AtomicBoolean(false);
@@ -198,14 +202,9 @@ public class RetryHuggingDownload {
         String processId = extractCommandProcessId(command, TimeUnit.SECONDS.toMillis(5));
         if (StringUtils.isNotBlank(processId)) {
             CommandExecutor.executeCommandWithoutRefreshBash(Lists.newArrayList("kill", "-9", processId), TimeUnit.SECONDS.toMillis(20));
+            Assert.isTrue(StringUtils.isBlank(processId),"failed to kill download process");
         }
     }
 
-    public static void main(String[] args) {
-        String repoPath = "mlabonne/gemma-3-27b-it-abliterated-GGUF";
-        File savePath = new File("/home/zbj/vllm/gemma-3-27b-it-abliterated-GGUF");
-        RetryHuggingDownload retryHuggingDownload = new RetryHuggingDownload();
-        retryHuggingDownload.downloadHuggingWholeRepo(repoPath, savePath, "*q8_0*");
-    }
 
 }
